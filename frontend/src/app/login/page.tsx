@@ -1,13 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
-import { ButtonLoader } from '@/components/Loaders';
+import { ButtonLoader, PageLoader } from '@/components/Loaders';
 
 export default function LoginPage() {
+    return (
+        <Suspense fallback={<PageLoader />}>
+            <LoginForm />
+        </Suspense>
+    );
+}
+
+function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { login } = useAuth();

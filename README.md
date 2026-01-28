@@ -5,12 +5,14 @@ A full-stack platform providing exclusive SaaS deals for startups, featuring use
 ## 🚀 Tech Stack
 
 **Frontend:**
+
 - Next.js 15 (App Router)
 - TypeScript
 - Tailwind CSS
 - Framer Motion (animations)
 
 **Backend:**
+
 - Node.js + Express.js
 - MongoDB + Mongoose
 - JWT Authentication
@@ -42,6 +44,7 @@ startup-benefits-platform/
 ## 🔧 Setup Instructions
 
 ### Prerequisites
+
 - Node.js 18+
 - MongoDB (local or Atlas)
 
@@ -69,32 +72,55 @@ npm run dev     # Start on port 3000
 ## 🔐 Authentication & Authorization
 
 ### Strategy
+
 - **JWT-based auth**: Tokens stored in cookies, expire in 7 days
 - **Password hashing**: bcrypt with salt rounds of 12
 - **Protected routes**: Middleware validates JWT on each request
 
-### User Verification
-- New users start as `isVerified: false`
-- Unverified users **cannot** claim locked deals
-- Verification status checked at claim time (not just on frontend)
+### User Verification Workflow
+
+1. **New users register** and start as `isVerified: false`
+2. Unverified users can browse deals but **cannot claim locked deals**
+3. **Admin verifies users** through the admin panel
+4. Once verified, users can claim all deals including locked ones
+
+> **Note:** Anyone can create a new account! After registration, the admin must verify the account before the user can access locked deals.
+
+### Admin Authentication Workflow
+
+1. Admin logs in with admin credentials at `/login`
+2. Admin is redirected to `/admin` dashboard
+3. From the admin panel, admin can:
+   - View all pending verifications
+   - Approve or reject user verification requests
+   - Manage deals and claims
 
 ### Flow
+
 ```
-Register → Get JWT → Access public deals → 
-Request verification → Access locked deals
+User: Register → Login → Browse Deals → Request Verification → Admin Approves → Access Locked Deals
+Admin: Login → Admin Dashboard → Manage Users/Verifications → Approve/Reject Requests
 ```
 
 ## 📋 Core Entities
 
 ### User
+
 ```javascript
 {
-  email, password, name, companyName,
-  companySize, isVerified, role, createdAt
+  (email,
+    password,
+    name,
+    companyName,
+    companySize,
+    isVerified,
+    role,
+    createdAt);
 }
 ```
 
 ### Deal
+
 ```javascript
 {
   title, description, partner: { name, logo, website },
@@ -104,6 +130,7 @@ Request verification → Access locked deals
 ```
 
 ### Claim
+
 ```javascript
 {
   user, deal, status: ['pending' | 'approved' | 'rejected'],
@@ -132,30 +159,34 @@ Request verification → Access locked deals
 ## 🌐 API Endpoints
 
 ### Auth
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/register | Create account |
-| POST | /api/auth/login | Login, get JWT |
-| GET | /api/auth/me | Get current user |
+
+| Method | Endpoint           | Description      |
+| ------ | ------------------ | ---------------- |
+| POST   | /api/auth/register | Create account   |
+| POST   | /api/auth/login    | Login, get JWT   |
+| GET    | /api/auth/me       | Get current user |
 
 ### Deals
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/deals | List all (with filters) |
-| GET | /api/deals/:id | Single deal details |
-| GET | /api/deals/categories | List categories |
-| GET | /api/deals/featured | Featured deals |
+
+| Method | Endpoint              | Description             |
+| ------ | --------------------- | ----------------------- |
+| GET    | /api/deals            | List all (with filters) |
+| GET    | /api/deals/:id        | Single deal details     |
+| GET    | /api/deals/categories | List categories         |
+| GET    | /api/deals/featured   | Featured deals          |
 
 ### Claims (Protected)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/claims | Claim a deal |
-| GET | /api/claims | User's claims |
-| GET | /api/claims/stats | Claim statistics |
+
+| Method | Endpoint          | Description      |
+| ------ | ----------------- | ---------------- |
+| POST   | /api/claims       | Claim a deal     |
+| GET    | /api/claims       | User's claims    |
+| GET    | /api/claims/stats | Claim statistics |
 
 ## 🎨 UI & Animation Features
 
 ### Implemented
+
 - Animated hero section with parallax scroll effects
 - Page transitions using Framer Motion
 - Micro-interactions (hover states, button feedback)
@@ -166,6 +197,7 @@ Request verification → Access locked deals
 - Category-based color coding
 
 ### Design System
+
 - Dark theme with purple/indigo accent
 - Custom scrollbar styling
 - `.glass` and `.glass-light` utility classes
@@ -185,6 +217,7 @@ Request verification → Access locked deals
 ## 🚧 Production Improvements Needed
 
 ### Security
+
 - [ ] Add rate limiting (express-rate-limit)
 - [ ] Implement CSRF protection
 - [ ] Add helmet.js for security headers
@@ -192,12 +225,14 @@ Request verification → Access locked deals
 - [ ] Move secrets to proper vault
 
 ### Performance
+
 - [ ] Add Redis caching for deals
 - [ ] Implement API response caching
 - [ ] Image optimization / CDN
 - [ ] Database connection pooling
 
 ### Features
+
 - [ ] Email verification flow
 - [ ] Admin dashboard for claim approval
 - [ ] Password reset functionality
@@ -205,6 +240,7 @@ Request verification → Access locked deals
 - [ ] Search indexing (Elasticsearch)
 
 ### Infrastructure
+
 - [ ] Docker containerization
 - [ ] CI/CD pipeline
 - [ ] Error monitoring (Sentry)
@@ -213,11 +249,29 @@ Request verification → Access locked deals
 
 ## 🧪 Demo Credentials
 
+### User Account
+
 ```
 Email: demo@startup.com
 Password: demo123
 Status: Verified (can claim locked deals)
 ```
+
+### Admin Account
+
+```
+Email: admin@startup.com
+Password: admin123
+Role: Admin (can verify users and manage deals)
+```
+
+### Creating Your Own Account
+
+1. Go to `/register` and create a new account
+2. Login with your credentials
+3. You'll start as **unverified** (cannot claim locked deals)
+4. Admin must approve your account from the admin panel
+5. Once verified, you can claim all deals
 
 ## 📊 Architecture Decisions
 
